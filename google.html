@@ -8,54 +8,135 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvRa3oVjawSI4WZEEo75Hd4CEtCj9SDEc">
     </script>
 
-    <script type="text/javascript"
-  	src="https://maps.googleapis.com/maps/api/js?libraries=visualization"></script>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+
+
 
     <script type="text/javascript">
 
+    var clientId = '0096863eba634740ac3775535b9034c0';
+
+	if (!clientId) {
+  	// alert('Put your own instagram client id in the above code to use this example.');
+	}
+
+
+    var urlTemplate = 'https://api.instagram.com/v1/media/search?lat=40.7142700&lng=-74.0059700';
+
+    var makeRequest = function(photo) {
+  
+    var req = $.ajax({
+    	type: "GET"
+        url: urlTemplate.replace("<TBH>", tbh),
+        dataType: 'jsonp',
+        cache: false;
+        data: {
+            client_id: clientId
+       	},
+       	success: function(data){
+       		for (var i = 0; i < 10; i++) {
+			$(".pics").append("<a target='_blank' href='" + data.data[i].link +
+			"'><img src='" + data.data[i].images.low_resolution.url +"'></img></a>");
+			}
+       		console.log(data)
+       	}
+
+    })
+    
+    return req;
+}; 
 
 	 var map;
+	 var service;
 	 var marker;
-
+	 var pos;
+	 var infowindow;
 
 	  function initialize() {
 	    var mapOptions = {
-	      zoom: 2,
-	      center: {lat: -33.865427, lng: 151.196123},
-	      mapTypeId: google.maps.MapTypeId.TERRAIN
+	    center: new google.maps.LatLng(40.7142700, -74.0059700),
+	      zoom: 14,
+	      // center: {lat: -33.865427, lng: 151.196123},
+	      // mapTypeId: google.maps.MapTypeId.TERRAIN
 	    };
 
 	    map = new google.maps.Map(document.getElementById('map-canvas'),
 	        mapOptions);
 
-	    // Create a <script> tag and set the USGS URL as the source.
-	    var script = document.createElement('script');
+	    // //HTML5 geolocation
 
-	    script.src = 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week';
-	    document.getElementsByTagName('head')[0].appendChild(script);
-	}
-
-	function eqfeed_callback(results) {
-  		map.data.addGeoJson(results);
-	}
+	    // if (navigator.geolocation) {
+     //            navigator.geolocation.getCurrentPosition(function (position) {
+     //                pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
 
-	marker = new google.maps.Marker({
-	    map:map,
-	    draggable:true,
-	    animation: google.maps.Animation.DROP,
-	    position: script
-	  });
-	  google.maps.event.addListener(marker, 'click', toggleBounce);
-	}
+     //                infowindow = new google.maps.InfoWindow({
+     //                    map: map,
+     //                    position: pos,
+     //                    content: 'This is your current position!'
+     //                });
 
-	function toggleBounce() {
+     //                    var circle = new google.maps.Circle({
+     //                        map: map,
+     //                        position: pos,
+     //                        // radius: 1000,    // 1km in metres
+     //                        // fillColor: '#6D86D1'
+     //                    });
+     //                    circle.bindTo('center', infowindow, 'position');
 
-	  if (marker.getAnimation() != null) {
-	    marker.setAnimation(null);
-	  } else {
-	    marker.setAnimation(google.maps.Animation.BOUNCE);
-	  }
+     //                map.setCenter(pos);
+
+     //                infowindow = new google.maps.InfoWindow();
+     //                var service = new google.maps.places.PlacesService(map);
+     //                service.nearbySearch(request, callback);
+
+     //            },
+
+     //                function () {
+     //                    handleNoGeolocation(true);
+     //                });
+     //        } else {
+     //            handleNoGeolocation(false);
+     //        }
+
+     //        function callback(results, status) {
+     //            if (status == google.maps.places.PlacesServiceStatus.OK) {
+     //                for (var i = 0; i < results.length; i++) {
+     //                    createMarker(results[i]);
+     //                }
+     //            }
+     //        }
+
+            var instaRequest = instaRequest('tbh');
+
+            function createMarker(tbh) {
+                var placeLoc = place.geometry.location;
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location
+                });
+
+                google.maps.event.addListener(marker, 'click', function () {
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
+                });
+
+            }
+        }
+
+        $.when(instaRequest).done(createMarker);
+	//     // Create a <script> tag and set the USGS URL as the source.
+	//     var script = document.createElement('script');
+
+	//     script.src = 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week';
+	//     document.getElementsByTagName('head')[0].appendChild(script);
+	// }
+
+	// function eqfeed_callback(results) {
+ //  		map.data.addGeoJson(results);
+	// }
+
+
 
 	 // Call the initialize function after the page has finished loading
       google.maps.event.addDomListener(window, 'load', initialize);
