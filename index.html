@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JS Bin</title>
+
+<script type="text/javascript" src="js/instafeed.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" href="css/foundation.css" />
+<script src="js/vendor/modernizr.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
+
+
+</head>
+<body>
+
+<div class="rows"></div>  
+<div class="results"></div>
+
+<!-- <div id="instafeed"></div>
+ -->
+<script type="text/javascript">
+
+var clientId = '0096863eba634740ac3775535b9034c0';
+
+if (!clientId) {
+  // alert('Put your own instagram client id in the above code to use this example.');
+}
+
+var urlTemplate = "https://api.instagram.com/v1/tags/<AWESOME>/media/recent";
+
+var makeRequest = function(awesome) {
+  
+    var req = $.ajax({
+        url: urlTemplate.replace("<AWESOME>", awesome),
+        dataType: 'jsonp',
+        data: {
+            client_id: clientId
+       },
+    })
+    
+    return req;
+}; 
+
+	var girlRequest = makeRequest('girl');
+	var boyRequest = makeRequest('boy');
+
+	var createRow = function(girlPhoto, boyPhoto) {
+	  var girlCol = "<div class='row'><div class='col girl'><img src='" + girlPhoto + "'></div>";
+	    var boyCol = "<div class='col boy'><img src='" + boyPhoto + "'></div></div>";
+	  return $(girlCol + boyCol);
+	}
+
+
+	var makeGame = function(girlResults, boyResults) {
+	  // First lets store the actual results we need in 
+	  // a variable so its easier to work with.
+	  var girlArray = girlResults[0].data;
+	  var boyArray = boyResults[0].data;
+	  
+	  // The results can have uneven numbers, so lets find 
+	  // the result with the fewest items and chop our
+	  var limit = Math.min(girlArray.length, boyArray.length) - 1;
+	  
+	  // slice lets take only the parts you want from an array, 
+	  // so here I'm cutting from the begging (0) to the limit, 
+	  // which is the smallest length.
+	  girlArray = girlArray.slice(0, limit);
+	  boyArray = boyArray.slice(0, limit);
+	  
+	  // Now that we have equal length arrays we can loop over 
+	  // and add them to our page.
+	  
+	  var rows = $('.rows');
+	  
+	  for (var i = 0; i < girlArray.length; i++) {
+	    var girlPhoto = girlArray[i].images.low_resolution.url;
+	    var boyPhoto = boyArray[i].images.low_resolution.url;
+	    rows.append(createRow(girlPhoto, boyPhoto));
+	  }
+	  
+	  $('.row').on('click', 'img', function(e) {
+	    var row = $(this).parents('.row');
+	    row.find('img').removeClass('selected');
+	    $(this).addClass('selected');
+	    recalculateScore()
+	  });
+	  
+	};
+
+	$.when(girlRequest, boyRequest).done(makeGame);
+
+console.log('Script done');
+
+    // var feed = new Instafeed({
+    //     get: 'tagged',
+    //     tagName: 'awesome',
+    //     clientId: '0096863eba634740ac3775535b9034c0'
+    // });
+    // feed.run();
+</script>
+
+</body>
+</html>
