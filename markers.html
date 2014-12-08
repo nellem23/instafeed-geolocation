@@ -1,0 +1,48 @@
+    
+<html>
+    <head>
+    <style>
+    html, body, #map-canvas { margin: 0; padding: 0; height: 100%; }
+    </style>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?libraries=visualization">
+    </script>
+    <script>
+      var map;
+
+      function initialize() {
+        map = new google.maps.Map(document.getElementById('map-canvas'), {
+          zoom: 11,
+          center: new google.maps.LatLng(40.7142700,-74.0059700),
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+
+        // Create a <script> tag and set the INSTAGRAM URL as the source.
+        var script = document.createElement('script');
+        // (In this example we use a locally stored copy instead.)
+        // script.src = 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week';
+
+        //grabs jsonp data from instragram link below words do not change
+        script.src = 'https://api.instagram.com/v1/media/search?access_token=29487735.  0096863.80c176170e694c41b6157bc5e3ac164c&lat=40.7142700&lng=-74.0059700&distance=1000';
+        document.getElementsByTagName('head')[0].appendChild(script);
+      }
+
+      // Loop through the results array and place a marker for each
+      // set of coordinates.
+      window.data = function(results) {
+        for (var i = 0; i < results.features.length; i++) {
+          var coords = results.features[i].geometry.coordinates;
+          var latLng = new google.maps.LatLng(coords[1],coords[0]);
+          var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+          });
+        }
+      }
+      google.maps.event.addDomListener(window, 'load', initialize)
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>

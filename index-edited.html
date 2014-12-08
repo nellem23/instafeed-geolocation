@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<!-- INSTAGRAM HEATMAP
+
+Created by Nelle McDade
+nellemcdade.com
+ -->
+<!-- Coordinates of New York in decimal degrees
+
+Latitude: 40.7142700  
+Longitude: -74.0059700 -->
+
+
+<head>
+  <meta charset="utf-8">
+  <title>Instagram Heat Map</title>
+  
+
+<link rel="stylesheet" type="text/css" href="css/app.css">
+<link rel="stylesheet" type="text/css" href="css/foundation.css">
+
+<script src="js/jquery.js"></script>
+
+<!-- get media by location  -->
+<!-- <script src="https://api.instagram.com/v1/media/search?lat=40.7142700&lng=-74.0059700&distance=5000"></script> -->
+
+<!-- <script src="js/instagram.min.js"></script> --> 
+
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+ -->
+
+<!-- WEAVING TOGETHER // var geocoder;
+// var map;
+
+// var lat = -34.397;
+// var lng = 150.644;
+
+// function initialize() {   moved down
+//   geocoder = new google.maps.Geocoder();
+//   //var latLng = new google.maps.LatLng(lat, lng); moved down
+//   var marker = new google.maps.Marker({
+//     position: latLng
+// // });
+  // var mapOptions = {
+  //   zoom: 8,   moved down
+  //   center: latlng
+  // }
+//   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions); the same
+// }
+
+// function codeAddress() {  moved down
+//   var address = document.getElementById('address').value;
+//   geocoder.geocode( { 'address': address}, function(results, status) {
+//     if (status == google.maps.GeocoderStatus.OK) {
+//       map.setCenter(results[0].geometry.location);
+//       var marker = new google.maps.Marker({
+//           map: map,
+//           position: results[0].geometry.location
+//       });
+//     } else {
+//       alert('Geocode was not successful for the following reason: ' + status);
+//     }
+//   });
+// } -->
+
+<!-- heatmap exmaple -->
+
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=visualization"></script>
+    
+    <script>
+
+
+    // GRAB INSTAGRAM ACCESS TOKEN
+    var clientId = '0096863eba634740ac3775535b9034c0';
+
+      if (!clientId) {
+        alert('Put your own instagram client id in the above code to use this example.');
+      }
+
+      // // SET TEMPLATING FOR JSON REQUEST
+      // var urlTemplate = "https://api.instagram.com/v1/location/<LOCATIONID>/media/recent";
+
+      //MAKE REQUEST TO GRAB THE PHOTOS
+      var makeRequest = function(newyork) 
+      {
+        
+         //MAKE THE AJAX REQUEST
+        var req = $.ajax({
+              // url: urlTemplate.replace("<LOCATIONID>", .location),
+              url:"https://api.instagram.com/v1/media/search?access_token=29487735.  0096863.80c176170e694c41b6157bc5e3ac164c&lat=40.7142700&lng=-74.0059700&distance=1000s"
+              dataType: 'jsonp',
+              data: 
+              {
+
+                  client_id: clientId,
+               
+              },
+              success: function (response) 
+              {
+                renderPhotos(response.results);
+
+                console.log('I got the results of new york Instagram Photos', results);
+              },
+              error: function(data)
+              {
+                alert('error');
+
+                console.error('Something went wrong');
+              },
+          });
+          
+          return req;
+      }; 
+debugger;
+      var photoRequest = makeRequest('newyork') ;
+
+//createPanel = function(photos) {}
+
+
+      var renderPhotos = function(photoResults)
+      { 
+        var photoArray = photoResults[0].data;
+            
+          var rows = $('rows');
+           
+            for (var i = 0; i < photoArray.length; i++)
+            {
+              var photos = photoArray[i].location.images.low_resolution.url;
+                rows.append(createRow.photos);
+              }
+      };      
+  //      return photos;
+   //   }
+
+        //DEFINES AND RENDERS PHOTOS AS THE PHOTOS GATHERED IN RESULTS
+          
+      $.when.photoRequest.done.renderPhotos;
+          // body...
+          //var photos = filterPhotos(results);
+      
+        
+       
+      var geocoder; //SO THAT USERS CAN SEARCH FOR A SPECIFIC PLACE
+      var map; //LOADS GOOGLE MAP
+    
+      var photoLat = results.data.location//.latitude; // GRABS DATA FROM JSONP REQUEST AND SETS LONG AND LAT TO IT
+      var photoLng = results.data.location//.longitude;
+
+      // Adding 500 Data Points
+      var map, pointarray, heatmap;
+
+      var instaData = [  //var latLng = 
+        new google.maps.LatLng(photoLat, photoLng) // make this a variable that contains the lattitude and longitured returned from each Instagram photo object
+      ];
+
+      function initialize() { //weaving together
+        var script = document.createElement('script');
+        script.src = 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week';
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+         geocoder = new google.maps.Geocoder();
+         var marker = new google.maps.Marker({
+           position: {
+             photoLat: 
+             photoLng},
+
+        var mapOptions = {
+
+          zoom: 8,
+        //center: latlng,
+          // zoom: 13,
+  
+          mapTypeId: google.maps.MapTypeId.SATELLITE
+        };
+
+        // DRAWS THE MAP IN DIV MAP-CANVAS
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+
+        //GRABS AND DRAWS POINTS BASED ON LOCATION OF INSTAGRAM PHOTOS
+        var pointArray = new google.maps.MVCArray(instaData);
+
+        //ADDS THE HEATMAP VISUALIZATION AFFECT AND ADDS IT TO THE DATA
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: pointArray
+        });
+
+        heatmap.setMap(map);
+      }
+
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+
+      //ADJUSTMENT FEATURES IN UI
+      function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      }
+
+      //RADIUS ADJUSTMENT FEATURES IN UI
+      function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);
+      }
+
+      //OPACITY ADJUSTMENT FEATURES IN UI
+      function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+      }
+
+    //   //SET LOCATION UI CONTROL 
+    //   function codeAddress() {  //MOVED DOWN
+    //   var address = document.getElementById('address').value;
+    //   geocoder.geocode( { 'address': address}, function(results, status) {
+    //     if (status == google.maps.GeocoderStatus.OK) {
+    //       map.setCenter(results[0].geometry.location);
+    //       var marker = new google.maps.Marker({
+    //           map: map,
+    //           position: results[0].geometry.location
+    //       });
+    //     } else {
+    //       alert('Geocode was not successful for the following reason: ' + status);
+    //     }
+    //   });
+    // }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+
+  // <!-- instafeed.js -->
+  <!-- // jQuery(function($) {
+  //   $('.instagram').on('willLoadInstagram', function(event, options) {
+  //     console.log(options);
+  //   });
+  //   $('.instagram').on('didLoadInstagram', function(event, response) {
+  //     console.log(response);
+  //   });
+  //   $('.instagram').instagram({
+  //     hash: 'love',
+  //     clientId: '0096863eba634740ac3775535b9034c0',
+  //     location: {
+  //      id:514276
+  //     },
+  //     min_timestamp: 1418256000,
+
+  //   });
+  // }); -->
+
+
+      </script>
+     </head>
+     <body>
+     <div>
+      <h3>Instagram Heatmap</h3>
+     </div>
+     <div id="panel">
+     <input id="address" type="textbox" value="New York, NY">
+        <input type="button" value="Geocode" onclick="codeAddress()">
+        <button class="button" onclick="toggleHeatmap()">Toggle Heatmap</button>
+        <button class="button" onclick="changeGradient()">Change gradient</button>
+        <button class="button" onclick="changeRadius()">Change radius</button>
+        <button class="button" onclick="changeOpacity()">Change opacity</button>
+      </div>
+        <div id="map-canvas"></div>
+  </body>
+</html>
