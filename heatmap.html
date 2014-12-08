@@ -86,7 +86,6 @@
         $.when(girlRequest, boyRequest).done(makeGame);
 
       console.log('Script done');
-      console.log(girlRequest, boyRequest);
     </script>
 
 
@@ -656,10 +655,10 @@
 
   <body>
     <div id="panel">
-      <button class="button [radius round]" onclick="toggleHeatmap()">Toggle Heatmap</button>
-      <button class="button [radius round]" onclick="changeGradient()">Change gradient</button>
-      <button class="button [radius round]" onclick="changeRadius()">Change radius</button>
-      <button class="button [radius round]" onclick="changeOpacity()">Change opacity</button>
+      <button class="button " onclick="toggleHeatmap()">Toggle Heatmap</button>
+      <button class="button" onclick="changeGradient()">Change gradient</button>
+      <button class="button" onclick="changeRadius()">Change radius</button>
+      <button class="button" onclick="changeOpacity()">Change opacity</button>
     </div>
     <div id="map-canvas"></div>
   </body>
